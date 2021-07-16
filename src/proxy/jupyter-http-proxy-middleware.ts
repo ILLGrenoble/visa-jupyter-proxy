@@ -2,10 +2,15 @@ import { IncomingMessage } from 'http';
 import { APPLICATION_CONFIG } from '../application-config';
 import { logger } from '../utils';
 import { Instance, InstanceNotebookSession, ProxyError } from '../models';
-import { ProxyMiddleWare } from './proxy-middleware';
+import { ProxyIntercept, ProxyMiddleWare } from './proxy-middleware';
 import { VisaInstanceService, NotebookSessionStorageService } from '../services';
 import * as cookie from 'cookie';
 import { Socket } from 'net';
+
+interface AuthenticatedServerParameters {
+  url: string;
+  token: string;
+}
 
 export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
 
@@ -29,17 +34,23 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
     }
   }
   
-  async interceptRequest(req: IncomingMessage): Promise<string> {
+  async interceptRequest(req: IncomingMessage): Promise<ProxyIntercept> {
     // Get access token from the request
     const accessToken = this.getAccessToken(req);
 
-    // Get IP address from request
-    const serverURL = await this.getAuthenticatedServerURL(req, accessToken);
+    // Get IP address and token from request
+    const serverParams = await this.getAuthenticatedServerParameters(req, accessToken);
 
-    return serverURL;
+    // Update request header with authorization
+    req.headers['Authorization'] = `token ${serverParams.token}`;
+
+    return {
+      url: serverParams.url,
+      request: req
+    };
   }
 
-  async interceptWesocketRequest(req: IncomingMessage, socket: Socket): Promise<string> {
+  async interceptWesocketRequest(req: IncomingMessage, socket: Socket): Promise<ProxyIntercept> {
     // Get access token from the request
     const accessToken = this.getAccessToken(req);
 
@@ -66,13 +77,20 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
       });
     }
 
-    const serverURL = await this.getAuthenticatedServerURL(req, accessToken);
+    // Get IP address and token from request
+    const serverParams = await this.getAuthenticatedServerParameters(req, accessToken);
 
-    return serverURL;
+    // Update request header with authorization
+    req.headers['Authorization'] = `token ${serverParams.token}`;
+
+    return {
+      url: serverParams.url,
+      request: req
+    };
   }
 
 
-  private async getAuthenticatedServerURL(req: IncomingMessage, accessToken: string): Promise<string> {
+  private async getAuthenticatedServerParameters(req: IncomingMessage, accessToken: string): Promise<AuthenticatedServerParameters> {
     // Decode proxy path
     const path = req.url;
     const instanceId = this.getInstanceIdFromPath(path);
@@ -82,8 +100,14 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
 
     // Set jupyter server URL
     const serverURL = `http://${instance.ipAddress}:${this._jupyterPort}`;
+    
+    // Get token from instance compute Id
+    const token = instance.computeId;
 
-    return serverURL;
+    return {
+      url: serverURL,
+      token: token
+    };
   }
 
   private getAccessToken(req: IncomingMessage): string {

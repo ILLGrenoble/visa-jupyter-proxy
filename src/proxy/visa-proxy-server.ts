@@ -3,7 +3,6 @@ import http, {IncomingMessage, Server, ServerResponse} from 'http';
 import { APPLICATION_CONFIG } from '../application-config';
 import { logger } from '../utils';
 import { ProxyMiddleWare } from './proxy-middleware';
-import { ProxyError } from '../models';
 import { Socket } from 'net';
 
 export class VisaProxyServer {
@@ -48,10 +47,10 @@ export class VisaProxyServer {
     try {
       logger.debug(`Incoming request ${req.url}`);
 
-      const serverURL = await this._proxyMiddleware.interceptRequest(req);
+      const proxyIntercept = await this._proxyMiddleware.interceptRequest(req);
 
-      logger.debug(`forwarding request ${req.url} to ${serverURL}`);
-      this._proxy.web(req, res, { target: serverURL }, (error) => {
+      logger.debug(`forwarding request ${req.url} to ${proxyIntercept.url}`);
+      this._proxy.web(proxyIntercept.request, res, { target: proxyIntercept.url }, (error) => {
         this.handleError(error, req, res);
       });
 
@@ -64,16 +63,11 @@ export class VisaProxyServer {
     try {
       logger.debug(`Incoming websocket request ${req.url}`);
 
-      const serverURL = await this._proxyMiddleware.interceptWesocketRequest(req, socket);
+      const proxyIntercept = await this._proxyMiddleware.interceptRequest(req);
 
-      this._proxy.ws(req, socket, head, { target: serverURL }, (error) => {
+      this._proxy.ws(proxyIntercept.request, socket, head, { target: proxyIntercept.url }, (error) => {
         this.handleError(error, req);
       });
-
-      // Listen to websocket data: update last interaction at on instance
-      // socket.on('data', (data: Buffer) => {
-      //   console.log('got a message: ' + data);
-      // })
 
     } catch (error) {
       this.handleError(error, req);
