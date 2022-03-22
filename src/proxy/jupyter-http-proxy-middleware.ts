@@ -144,7 +144,7 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
 
       return instance;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Error getting instance with Id ${instanceId}: ${error.message} (${error.statusCode})`);
       throw error;
     }
