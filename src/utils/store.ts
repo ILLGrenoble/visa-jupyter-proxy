@@ -24,6 +24,8 @@ export class Store {
       logging: false,
     });
 
+    this._localStorage.init();
+
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
     }

@@ -5,7 +5,7 @@ import { Instance, InstanceNotebookSession, ProxyError } from '../models';
 import { ProxyMiddleWare } from './proxy-middleware';
 import { VisaInstanceService, NotebookSessionStorageService } from '../services';
 import * as cookie from 'cookie';
-import { Socket } from 'net';
+import { Duplex } from 'stream';
 
 export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
 
@@ -39,7 +39,7 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
     return serverURL;
   }
 
-  async interceptWesocketRequest(req: IncomingMessage, socket: Socket): Promise<string> {
+  async interceptWesocketRequest(req: IncomingMessage, socket: Duplex): Promise<string> {
     // Get access token from the request
     const accessToken = this.getAccessToken(req);
 

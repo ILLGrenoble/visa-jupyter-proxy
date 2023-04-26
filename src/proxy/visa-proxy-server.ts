@@ -3,8 +3,7 @@ import http, {IncomingMessage, Server, ServerResponse} from 'http';
 import { APPLICATION_CONFIG } from '../application-config';
 import { logger } from '../utils';
 import { ProxyMiddleWare } from './proxy-middleware';
-import { ProxyError } from '../models';
-import { Socket } from 'net';
+import { Duplex } from 'stream';
 
 export class VisaProxyServer {
 
@@ -60,7 +59,7 @@ export class VisaProxyServer {
     }
   }
 
-  private async handleWebsocketUpgrade(req: IncomingMessage, socket: Socket, head: any): Promise<void> {
+  private async handleWebsocketUpgrade(req: IncomingMessage, socket: Duplex, head: any): Promise<void> {
     try {
       logger.debug(`Incoming websocket request ${req.url}`);
 
