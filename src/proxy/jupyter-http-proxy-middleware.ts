@@ -1,6 +1,6 @@
 import { IncomingMessage } from 'http';
 import { APPLICATION_CONFIG } from '../application-config';
-import { logger } from '../utils';
+import { errMsg, logger } from '../utils';
 import { Instance, InstanceNotebookSession, ProxyError } from '../models';
 import { ProxyMiddleWare } from './proxy-middleware';
 import { VisaInstanceService, NotebookSessionStorageService } from '../services';
@@ -22,7 +22,12 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
       const zombieInstanceNotebookSessions = await this._notebookSessionStorage.eraseInstanceNotebookSessionInStorage();
       for (const instanceNotebookSession of zombieInstanceNotebookSessions) {
         logger.debug(`Erasing zombie Jupyter notebook session for kernel ${instanceNotebookSession.kernel} with sessionId ${instanceNotebookSession.sessionId}`);
-        await this._visaInstanceService.onJupyterNotebookClosed(instanceNotebookSession);
+        try {
+          await this._visaInstanceService.onJupyterNotebookClosed(instanceNotebookSession);
+
+        } catch (error) {
+          logger.warning(`Error caught when closing the notebook: ${errMsg(error)}`);
+        }
       }
 
       this._notebookStorageInitialised = true;
@@ -57,12 +62,17 @@ export class JupyterHttpProxyMiddleware implements ProxyMiddleWare{
 
       socket.on('close', async () => {
         logger.debug(`Socket closed for instance ${instanceId}`);
-  
-        // Notify api server of jupyter session end
-        await this._visaInstanceService.onJupyterNotebookClosed(instanceNotebookSession);
-  
-        // Remove notebook session from persistence
-        await this._notebookSessionStorage.removeInstanceNotebookSessionFromStorage(instanceNotebookSession);
+ 
+        try {
+          // Notify api server of jupyter session end
+          await this._visaInstanceService.onJupyterNotebookClosed(instanceNotebookSession);
+    
+          // Remove notebook session from persistence
+          await this._notebookSessionStorage.removeInstanceNotebookSessionFromStorage(instanceNotebookSession);
+          
+        } catch (error) {
+          logger.warning(`Error caught when closing the notebook: ${errMsg(error)}`);
+        }
       });
     }
 
