@@ -1,3 +1,7 @@
+2.8.1 10/05/2023
+================
+ * Catch exceptions correctly when closing notebooks.
+
 2.8.0 28/04/2023
 ================
  * Update to node 20 and update all packages.
