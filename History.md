@@ -1,3 +1,6 @@
+2.9.0 16/10/2023
+================
+
 2.8.1 10/05/2023
 ================
  * Catch exceptions correctly when closing notebooks.
