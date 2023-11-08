@@ -1,6 +1,9 @@
 import { Store, logger } from './utils';
-import { VisaProxyServer, JupyterHttpProxyMiddleware } from './proxy';
+import { VisaProxyServer, JupyterHttpProxyMiddleware, ServiceHttpProxyMiddleware } from './proxy';
 import { VisaInstanceService, NotebookSessionStorageService } from './services';
+import {resolve} from 'path';
+import { readFile } from 'fs/promises';
+import { ProxyConf } from './models';
 
 export class Application {
 
@@ -17,10 +20,21 @@ export class Application {
       const store = new Store();
       const notebookSessionStorageService: NotebookSessionStorageService = new NotebookSessionStorageService(store);
       const visaInstanceService = new VisaInstanceService();
-      const jupyterProxyMiddleware = new JupyterHttpProxyMiddleware(visaInstanceService, notebookSessionStorageService);
-      await jupyterProxyMiddleware.initialiseNotebookSessionStorage();
 
-      this._proxyServer = new VisaProxyServer(jupyterProxyMiddleware);
+      const configPath = resolve(__dirname, '../proxy.conf.json');
+      const configData = await readFile(configPath, );
+      const config = JSON.parse(configData.toString('utf-8')) as ProxyConf[];
+
+      const requestHandlers = config.map(conf => {
+        logger.info(`Adding proxy '${conf.name}' for paths matching '${conf.match}'`);
+        if (conf.type === 'jupyter') {
+          return new JupyterHttpProxyMiddleware(conf, visaInstanceService, notebookSessionStorageService);
+        } else if (conf.type === 'service') {
+          return new ServiceHttpProxyMiddleware(conf, visaInstanceService);
+        }
+      });
+
+      this._proxyServer = new VisaProxyServer(requestHandlers);
 
       await this._proxyServer.start();
       logger.info('Application running');

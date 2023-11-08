@@ -33,5 +33,6 @@ WORKDIR /app
 COPY --from=build /app/index.js ./index.js
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/proxy.conf.json ./proxy.conf.json
 
 CMD [ "node", "." ]

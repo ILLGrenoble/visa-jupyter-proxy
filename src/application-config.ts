@@ -14,10 +14,6 @@ export class ApplicationConfig {
     port: number,
   }
 
-  jupyter: {
-    port: number,
-  }
-
   api: {
     host: string,
     port: number
@@ -51,11 +47,8 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
         }
       },
       server: {
-        host: process.env.VISA_JUPYTER_PROXY_SERVER_HOST == null ? 'localhost' : process.env.VISA_JUPYTER_PROXY_SERVER_HOST,
+        host: process.env.VISA_JUPYTER_PROXY_SERVER_HOST == null ? '0.0.0.0' : process.env.VISA_JUPYTER_PROXY_SERVER_HOST,
         port: process.env.VISA_JUPYTER_PROXY_SERVER_PORT == null ? 8088 : +process.env.VISA_JUPYTER_PROXY_SERVER_PORT
-      },
-      jupyter: {
-        port: process.env.VISA_JUPYTER_PROXY_JUPYTER_PORT == null ? 8888 : +process.env.VISA_JUPYTER_PROXY_JUPYTER_PORT
       },
       api: {
         host: process.env.VISA_JUPYTER_PROXY_API_HOST == null ? 'localhost' : process.env.VISA_JUPYTER_PROXY_API_HOST,
