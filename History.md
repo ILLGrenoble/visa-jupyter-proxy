@@ -1,3 +1,7 @@
+2.10.0 20/11/2023
+================
+ * Generalise the proxy to allow multiple services to be proxied. All require authentication/authorisation, jupyter service performs additional metrics on the api server. Path rewrites possible.
+
 2.9.0 16/10/2023
 ================
 
