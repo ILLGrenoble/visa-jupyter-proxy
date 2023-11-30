@@ -74,12 +74,13 @@ export class VisaProxyServer {
   private async handleWebsocketUpgrade(req: IncomingMessage, socket: Duplex, head: any): Promise<void> {
     logger.debug(`Incoming websocket request ${req.url}...`);
     const requestHandler = this.findWebsocketRequestHandler(req);
-    logger.debug(`... found handler '${requestHandler.name}' for websocket request ${req.url}`);
     if (requestHandler) {
+      logger.debug(`... found handler '${requestHandler.name}' for websocket request ${req.url}`);
       const incomingPath = req.url;
       try {
         const response = await requestHandler.interceptWesocketRequest(req, socket);
   
+        logger.debug(`Forwarding websocket request ${incomingPath} to instance ${response.instance.id} at ${response.target}${req.url}`);
         this._proxy.ws(req, socket, head, { target: response.target }, (error) => {
           this.handleError(error, requestHandler, incomingPath);
         });
