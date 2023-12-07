@@ -14,5 +14,15 @@
         "pathRewrite": {
             "^/visafs/\\d+/": "/"
         }
+    },
+    {
+        "match": "^/ws/print/(\\d+).*",
+        "type": "service",
+        "name": "Visa Printing",
+        "remotePort": 8091,
+        "pathRewrite": {
+            "^/ws/print/\\d+/": "/socket.io/"
+        },
+        "ws": true
     }
 ]
