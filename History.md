@@ -1,3 +1,8 @@
+2.11.0 09/01/2024
+================
+ * Add config for visa-print server
+ * Fix logging on websocket proxy when not found
+
 2.10.0 20/11/2023
 ================
  * Generalise the proxy to allow multiple services to be proxied. All require authentication/authorisation, jupyter service performs additional metrics on the api server. Path rewrites possible.
