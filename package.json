@@ -1,6 +1,6 @@
 {
   "name": "visa-jupyter-proxy",
-  "version": "2.11.0",
+  "version": "3.0.0",
   "description": "VISA Jupyter Proxy",
   "main": "index.js",
   "scripts": {
