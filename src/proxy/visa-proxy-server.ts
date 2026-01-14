@@ -51,8 +51,8 @@ export class VisaProxyServer {
     logger.debug(`Incoming request ${req.url}...`);
 
     const requestHandler = this.findRequestHandler(req);
-    logger.debug(`... found handler '${requestHandler.name}' for request ${req.url}`);
     if (requestHandler) {
+      logger.debug(`... found handler '${requestHandler.name}' for request ${req.url}`);
       const incomingPath = req.url;
       try {
         const response = await requestHandler.interceptRequest(req);
@@ -67,7 +67,7 @@ export class VisaProxyServer {
       }
   
     } else {
-      logger.debug(`... no handler found for websocket request ${req.url}`);
+      logger.debug(`... no handler found for request ${req.url}`);
     }
   }
 
