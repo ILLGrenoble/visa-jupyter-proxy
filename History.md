@@ -1,3 +1,7 @@
+3.7.1 20/01/2026
+================
+ - Request handler being accessed before checking if it exists
+
 3.7.0 08/12/2025
 ================
 
