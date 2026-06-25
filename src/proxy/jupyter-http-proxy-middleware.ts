@@ -69,7 +69,7 @@ export class JupyterHttpProxyMiddleware extends ProxyMiddleWare{
 
 
   private getInstanceNotebookSessionFromRequest(url: string): InstanceNotebookSession {
-    const regex = '^\\/jupyter\\/(\\d+)\\/api\\/kernels\\/([a-f0-9-]+).*session_id=([a-f0-9-]+).*$';
+    const regex = '^\\/jupyter\\/(\\d+)\\/(?:lab\\/user\\/[a-z0-9]+\\/)?api\\/kernels\\/([a-f0-9-]+).*session_id=([a-f0-9-]+).*$';
     const match = url.match(regex)
     if (match != null && match.length >= 3) {
       const instanceId = Number(match[1]);
