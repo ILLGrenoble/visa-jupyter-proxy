@@ -7,6 +7,16 @@
         "ws": true
     },
     {
+        "match": "^/code/(\\d+).*",
+        "type": "service",
+        "name": "VSCode",
+        "remotePort": 8080,
+        "ws": true,
+        "pathRewrite": {
+            "^/code/\\d+/": "/"
+        }
+    },
+    {
         "match": "^/visafs/(\\d+).*",
         "type": "service",
         "name": "Visa Files",

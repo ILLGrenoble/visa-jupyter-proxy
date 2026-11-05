@@ -1,4 +1,4 @@
-import ProxyServer from 'http-proxy';
+import ProxyServer from 'http-proxy-3';
 import http, {IncomingMessage, Server, ServerResponse} from 'http';
 import { APPLICATION_CONFIG } from '../application-config';
 import { logger } from '../utils';

@@ -103,7 +103,7 @@ export abstract class ProxyMiddleWare {
     if (!req.headers.cookie) {
       return null;
     }
-    const cookies = cookie.parse(req.headers.cookie);
+    const cookies = cookie.parseCookie(req.headers.cookie);
 
     const accessToken = cookies['access_token'];
 

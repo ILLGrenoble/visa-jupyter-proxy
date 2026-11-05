@@ -2,7 +2,7 @@ import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { APPLICATION_CONFIG } from "../application-config";
 import { Instance, InstanceNotebookSession, ProxyError } from "../models";
 import { InstanceCacheService } from "./instance-cache.service";
-import JwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { logger } from "../utils";
 
 export class VisaInstanceService {
@@ -42,7 +42,7 @@ export class VisaInstanceService {
   }
 
   async getInstance(instanceId: number, accessToken: string): Promise<Instance> {
-    const decodedToken = JwtDecode(accessToken);
+    const decodedToken = jwtDecode(accessToken);
     const userId = decodedToken['employeeNumber'];
 
     // Get instance from the cache
