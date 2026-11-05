@@ -1,3 +1,9 @@
+3.9.0 05/11/2026
+================
+ * Update to Node 26
+ * Update all dependencies
+ * Replace http-proxy with http-proxy-3 (maintained re-write)
+
 3.8.0 13/03/2026
 ================
 
